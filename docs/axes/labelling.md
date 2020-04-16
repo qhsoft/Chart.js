@@ -9,6 +9,7 @@ The scale label configuration is nested under the scale configuration in the `sc
 | Name | Type | Default | Description
 | ---- | ---- | ------- | -----------
 | `display` | `boolean` | `false` | If true, display the axis title.
+| `align` | `string` | `'center'` | Alignment of the axis title. Possible options are `'start'`, `'center'` and `'end'`
 | `labelString` | `string` | `''` | The text for the title. (i.e. "# of People" or "Response Choices").
 | `lineHeight` | <code>number&#124;string</code> | `1.2` | Height of an individual line of text (see [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/line-height)).
 | `fontColor` | `Color` | `'#666'` | Font color for scale title.
@@ -30,14 +31,14 @@ var chart = new Chart(ctx, {
     data: data,
     options: {
         scales: {
-            yAxes: [{
+            y: {
                 ticks: {
                     // Include a dollar sign in the ticks
                     callback: function(value, index, values) {
                         return '$' + value;
                     }
                 }
-            }]
+            }
         }
     }
 });

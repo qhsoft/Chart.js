@@ -50,10 +50,17 @@ The following options can be included in a polar area chart dataset to configure
 | [`borderAlign`](#border-alignment) | `string` | Yes | Yes | `'center'`
 | [`borderColor`](#styling) | [`Color`](../general/colors.md) | Yes | Yes | `'#fff'`
 | [`borderWidth`](#styling) | `number` | Yes | Yes | `2`
+| [`clip`](#general) | <code>number&#124;object</code> | - | - | `undefined`
 | [`data`](#data-structure) | `number[]` | - | - | **required**
 | [`hoverBackgroundColor`](#interations) | [`Color`](../general/colors.md) | Yes | Yes | `undefined`
 | [`hoverBorderColor`](#interactions) | [`Color`](../general/colors.md) | Yes | Yes | `undefined`
 | [`hoverBorderWidth`](#interactions) | `number` | Yes | Yes | `undefined`
+
+### General
+
+| Name | Description
+| ---- | ----
+| `clip` | How to clip relative to chartArea. Positive value allows overflow, negative value clips that many pixels inside chartArea. `0` = clip at chartArea. Clipping can also be configured per side: `clip: {left: 5, top: false, right: -2, bottom: 0}`
 
 ### Styling
 
@@ -70,6 +77,7 @@ All these values, if `undefined`, fallback to the associated [`elements.arc.*`](
 ### Border Alignment
 
 The following values are supported for `borderAlign`.
+
 * `'center'` (default)
 * `'inner'`
 
@@ -93,15 +101,18 @@ These are the customisation options specific to Polar Area charts. These options
 
 | Name | Type | Default | Description
 | ---- | ---- | ------- | -----------
-| `startAngle` | `number` | `-0.5 * Math.PI` | Starting angle to draw arcs for the first item in a dataset.
+| `startAngle` | `number` | `0` | Starting angle to draw arcs for the first item in a dataset. In degrees, 0 is at top.
 | `animation.animateRotate` | `boolean` | `true` | If true, the chart will animate in with a rotation animation. This property is in the `options.animation` object.
 | `animation.animateScale` | `boolean` | `true` | If true, will animate scaling the chart from the center outwards.
+
+The polar area chart uses the [radialLinear](../axes/radial/linear.md) scale. Additional configuration is provided via the scale.
 
 ## Default Options
 
 We can also change these defaults values for each PolarArea type that is created, this object is available at `Chart.defaults.polarArea`. Changing the global options only affects charts created after the change. Existing charts are not changed.
 
 For example, to configure all new polar area charts with `animateScale = false` you would do:
+
 ```javascript
 Chart.defaults.polarArea.animation.animateScale = false;
 ```

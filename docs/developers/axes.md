@@ -6,6 +6,8 @@ Axes in Chart.js can be individually extended. Axes should always derive from `C
 let MyScale = Chart.Scale.extend({
     /* extensions ... */
 });
+MyScale.id = 'myScale';
+MyScale.defaults = defaultConfigObject;
 
 // MyScale is now derived from Chart.Scale
 ```
@@ -13,7 +15,7 @@ let MyScale = Chart.Scale.extend({
 Once you have created your scale class, you need to register it with the global chart object so that it can be used. A default config for the scale may be provided when registering the constructor. The first parameter to the register function is a string key that is used later to identify which scale type to use for a chart.
 
 ```javascript
-Chart.scaleService.registerScaleType('myScale', MyScale, defaultConfigObject);
+Chart.scaleService.registerScale(MyScale);
 ```
 
 To use the new scale, simply pass in the string key to the config when creating a chart.
@@ -24,9 +26,9 @@ var lineChart = new Chart(ctx, {
     type: 'line',
     options: {
         scales: {
-            yAxes: [{
-                type: 'myScale' // this is the same key that was passed to the registerScaleType function
-            }]
+            y: {
+                type: 'myScale' // this is the same id that was set on the scale
+            }
         }
     }
 });
@@ -73,8 +75,8 @@ To work with Chart.js, custom scale types must implement the following interface
     // buildTicks() should create a ticks array on the axis instance, if you intend to use any of the implementations from the base class
     buildTicks: function() {},
 
-    // Get the value to show for the data at the given index of the the given dataset, ie this.chart.data.datasets[datasetIndex].data[index]
-    getLabelForIndex: function(index, datasetIndex) {},
+    // Get the label to show for the given value
+    getLabelForValue: function(value) {},
 
     // Get the pixel (x coordinate for horizontal axis, y coordinate for vertical axis) for a given value
     // @param index: index into the ticks array
@@ -96,11 +98,11 @@ Optionally, the following methods may also be overwritten, but an implementation
 
 ```javascript
 {
-    // Transform the ticks array of the scale instance into strings. The default implementation simply calls this.options.ticks.callback(numericalTick, index, ticks);
-    convertTicksToLabels: function() {},
+    // Adds labels to objects in the ticks array. The default implementation simply calls this.options.ticks.callback(numericalTick, index, ticks);
+    generateTickLabels: function() {},
 
     // Determine how much the labels will rotate by. The default implementation will only rotate labels if the scale is horizontal.
-    calculateTickRotation: function() {},
+    calculateLabelRotation: function() {},
 
     // Fits the scale into the canvas.
     // this.maxWidth and this.maxHeight will tell you the maximum dimensions the scale instance can be. Scales should endeavour to be as efficient as possible with canvas space.

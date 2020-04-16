@@ -1,4 +1,5 @@
 # Bar
+
 A bar chart provides a way of showing data values represented as vertical bars. It is sometimes used to show trend data, and the comparison of multiple data sets side by side.
 
 {% chartjs %}
@@ -41,17 +42,16 @@ A bar chart provides a way of showing data values represented as vertical bars. 
     },
     "options": {
         "scales": {
-            "yAxes": [{
-                "ticks": {
-                    "beginAtZero": true
-                }
-            }]
+            "y": {
+                "beginAtZero": true
+            }
         }
     }
 }
 {% endchartjs %}
 
 ## Example Usage
+
 ```javascript
 var myBarChart = new Chart(ctx, {
     type: 'bar',
@@ -72,11 +72,13 @@ the color of the bars is generally set this way.
 | [`borderColor`](#styling) | [`Color`](../general/colors.md) | Yes | Yes | `'rgba(0, 0, 0, 0.1)'`
 | [`borderSkipped`](#borderskipped) | `string` | Yes | Yes | `'bottom'`
 | [`borderWidth`](#borderwidth) | <code>number&#124;object</code> | Yes | Yes | `0`
+| [`clip`](#general) | <code>number&#124;object</code> | - | - | `undefined`
 | [`data`](#data-structure) | `object[]` | - | - | **required**
 | [`hoverBackgroundColor`](#interactions) | [`Color`](../general/colors.md) | - | Yes | `undefined`
 | [`hoverBorderColor`](#interactions) | [`Color`](../general/colors.md) | - | Yes | `undefined`
 | [`hoverBorderWidth`](#interactions) | `number` | - | Yes | `1`
 | [`label`](#general) | `string` | - | - | `''`
+| [`order`](#general) | `number` | - | - | `0`
 | [`xAxisID`](#general) | `string` | - | - | first x axis
 | [`yAxisID`](#general) | `string` | - | - | first y axis
 
@@ -84,7 +86,9 @@ the color of the bars is generally set this way.
 
 | Name | Description
 | ---- | ----
+| `clip` | How to clip relative to chartArea. Positive value allows overflow, negative value clips that many pixels inside chartArea. `0` = clip at chartArea. Clipping can also be configured per side: `clip: {left: 5, top: false, right: -2, bottom: 0}`
 | `label` | The label for the dataset which appears in the legend and tooltips.
+| `order` | The drawing order of dataset. Also affects order for stacking, tooltip and legend.
 | `xAxisID` | The ID of the x axis to plot this dataset on.
 | `yAxisID` | The ID of the y axis to plot this dataset on.
 
@@ -98,6 +102,7 @@ The style of each bar can be controlled with the following properties:
 | `borderColor` | The bar border color.
 | [`borderSkipped`](#borderskipped) | The edge to skip when drawing bar.
 | [`borderWidth`](#borderwidth) | The bar border width (in pixels).
+| `clip` | How to clip relative to chartArea. Positive value allows overflow, negative value clips that many pixels inside chartArea. `0` = clip at chartArea. Clipping can also be configured per side: `clip: {left: 5, top: false, right: -2, bottom: 0}`
 
 All these values, if `undefined`, fallback to the associated [`elements.rectangle.*`](../configuration/elements.md#rectangle-configuration) options.
 
@@ -110,6 +115,7 @@ that derive from a bar chart.
 **Note:** for negative bars in vertical chart, `top` and `bottom` are flipped. Same goes for `left` and `right` in horizontal chart.
 
 Options are:
+
 * `'bottom'`
 * `'left'`
 * `'top'`
@@ -132,8 +138,9 @@ The interaction with each bar can be controlled with the following properties:
 
 All these values, if `undefined`, fallback to the associated [`elements.rectangle.*`](../configuration/elements.md#rectangle-configuration) options.
 
-## Scale Configuration
-The bar chart accepts the following configuration from the associated `scale` options:
+## Dataset Configuration
+
+The bar chart accepts the following configuration from the associated dataset options:
 
 | Name | Type | Default | Description
 | ---- | ---- | ------- | -----------
@@ -142,6 +149,36 @@ The bar chart accepts the following configuration from the associated `scale` op
 | `barThickness` | <code>number&#124;string</code> | | Manually set width of each bar in pixels. If set to `'flex'`, it computes "optimal" sample widths that globally arrange bars side by side. If not set (default), bars are equally sized based on the smallest interval. [more...](#barthickness)
 | `maxBarThickness` | `number` | | Set this to ensure that bars are not sized thicker than this.
 | `minBarLength` | `number` | | Set this to ensure that bars have a minimum length in pixels.
+
+### Example Usage
+
+```javascript
+data: {
+    datasets: [{
+        barPercentage: 0.5,
+        barThickness: 6,
+        maxBarThickness: 8,
+        minBarLength: 2,
+        data: [10, 20, 30, 40, 50, 60, 70]
+    }]
+};
+```
+
+### barThickness
+
+If this value is a number, it is applied to the width of each bar, in pixels. When this is enforced, `barPercentage` and `categoryPercentage` are ignored.
+
+If set to `'flex'`, the base sample widths are calculated automatically based on the previous and following samples so that they take the full available widths without overlap. Then, bars are sized using `barPercentage` and `categoryPercentage`. There is no gap when the percentage options are 1. This mode generates bars with different widths when data are not evenly spaced.
+
+If not set (default), the base sample widths are calculated using the smallest interval that prevents bar overlapping, and bars are sized using `barPercentage` and `categoryPercentage`. This mode always generates bars equally sized.
+
+## Scale Configuration
+
+The bar chart sets unique default values for the following configuration from the associated `scale` options:
+
+| Name | Type | Default | Description
+| ---- | ---- | ------- | -----------
+| `offset` | `boolean` | `true` | If true, extra space is added to the both edges and the axis is scaled to fit into the chart area.
 | `gridLines.offsetGridLines` | `boolean` | `true` | If true, the bars for a particular data point fall between the grid lines. The grid line will move to the left by one half of the tick interval. If false, the grid line will go right down the middle of the bars. [more...](#offsetgridlines)
 
 ### Example Usage
@@ -149,26 +186,17 @@ The bar chart accepts the following configuration from the associated `scale` op
 ```javascript
 options = {
     scales: {
-        xAxes: [{
-            barPercentage: 0.5,
-            barThickness: 6,
-            maxBarThickness: 8,
-            minBarLength: 2,
+        x: {
             gridLines: {
                 offsetGridLines: true
             }
-        }]
+        }
     }
 };
 ```
-### barThickness
-If this value is a number, it is applied to the width of each bar, in pixels. When this is enforced, `barPercentage` and `categoryPercentage` are ignored.
-
-If set to `'flex'`, the base sample widths are calculated automatically based on the previous and following samples so that they take the full available widths without overlap. Then, bars are sized using `barPercentage` and `categoryPercentage`. There is no gap when the percentage options are 1. This mode generates bars with different widths when data are not evenly spaced.
-
-If not set (default), the base sample widths are calculated using the smallest interval that prevents bar overlapping, and bars are sized using `barPercentage` and `categoryPercentage`. This mode always generates bars equally sized.
 
 ### offsetGridLines
+
 If true, the bars for a particular data point fall between the grid lines. The grid line will move to the left by one half of the tick interval, which is the space between the grid lines. If false, the grid line will go right down the middle of the bars. This is set to true for a category scale in a bar chart while false for other scales or chart types by default.
 
 ## Default Options
@@ -201,22 +229,7 @@ Sample:     |==============|
 
 ## Data Structure
 
-The `data` property of a dataset for a bar chart is specified as an array of numbers. Each point in the data array corresponds to the label at the same index on the x axis.
-
-```javascript
-data: [20, 10]
-```
-
-You can also specify the dataset as x/y coordinates when using the [time scale](../axes/cartesian/time.md#time-cartesian-axis).
-
-```javascript
-data: [{x:'2016-12-25', y:20}, {x:'2016-12-26', y:10}]
-```
-
-You can also specify the dataset for a bar chart as arrays of two numbers. This will force rendering of bars with gaps between them (floating-bars). First and second numbers in array will correspond the start and the end point of a bar respectively.
-```javascript
-data: [[5,6], [-3,-6]]
-```
+All of the supported [data structures](../general/data-structures.md) can be used with bar charts.
 
 ## Stacked Bar Chart
 
@@ -228,12 +241,12 @@ var stackedBar = new Chart(ctx, {
     data: data,
     options: {
         scales: {
-            xAxes: [{
+            x: {
                 stacked: true
-            }],
-            yAxes: [{
+            },
+            y: {
                 stacked: true
-            }]
+            }
         }
     }
 });
@@ -246,6 +259,7 @@ The following dataset properties are specific to stacked bar charts.
 | `stack` | `string` | The ID of the group to which this dataset belongs to (when stacked, each group will be a separate stack).
 
 ## Horizontal Bar Chart
+
 A horizontal bar chart is a variation on a vertical bar chart. It is sometimes used to show trend data, and the comparison of multiple data sets side by side.
 {% chartjs %}
 {
@@ -279,17 +293,16 @@ A horizontal bar chart is a variation on a vertical bar chart. It is sometimes u
     },
     "options": {
         "scales": {
-            "xAxes": [{
-                "ticks": {
-                    "beginAtZero": true
-                }
-            }]
+            "x": {
+                "beginAtZero": true
+            }
         }
     }
 }
 {% endchartjs %}
 
 ## Example
+
 ```javascript
 var myBarChart = new Chart(ctx, {
     type: 'horizontalBar',
@@ -299,6 +312,11 @@ var myBarChart = new Chart(ctx, {
 ```
 
 ### Config Options
+
 The configuration options for the horizontal bar chart are the same as for the [bar chart](#scale-configuration). However, any options specified on the x axis in a bar chart, are applied to the y axis in a horizontal bar chart.
 
 The default horizontal bar configuration is specified in `Chart.defaults.horizontalBar`.
+
+## Internal data format
+
+`{x, y, _custom}` where `_custom` is optional object defining stacked bar properties: `{start, end, barStart, barEnd, min, max}`. `start` and `end` are the input values. Those two are repeated in `barStart` (closer to origin), `barEnd` (further from origin), `min` and `max`.

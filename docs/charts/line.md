@@ -1,4 +1,5 @@
 # Line
+
 A line chart is a way of plotting data points on a line. Often, it is used to show trend data, or the comparison of two data sets.
 
 {% chartjs %}
@@ -29,6 +30,7 @@ A line chart is a way of plotting data points on a line. Often, it is used to sh
 {% endchartjs %}
 
 ## Example Usage
+
 ```javascript
 var myLineChart = new Chart(ctx, {
     type: 'line',
@@ -50,10 +52,19 @@ The line chart allows a number of properties to be specified for each dataset. T
 | [`borderDashOffset`](#line-styling) | `number` | Yes | - | `0.0`
 | [`borderJoinStyle`](#line-styling) | `string` | Yes | - | `'miter'`
 | [`borderWidth`](#line-styling) | `number` | Yes | - | `3`
+| [`clip`](#general) | <code>number&#124;object</code> | - | - | `undefined`
 | [`cubicInterpolationMode`](#cubicinterpolationmode) | `string` | Yes | - | `'default'`
 | [`fill`](#line-styling) | <code>boolean&#124;string</code> | Yes | - | `true`
+| [`hoverBackgroundColor`](#line-styling) | [`Color`](../general/colors.md) | Yes | - | `undefined`
+| [`hoverBorderCapStyle`](#line-styling) | `string` | Yes | - | `undefined`
+| [`hoverBorderColor`](#line-styling) | [`Color`](../general/colors.md) | Yes | - | `undefined`
+| [`hoverBorderDash`](#line-styling) | `number[]` | Yes | - | `undefined`
+| [`hoverBorderDashOffset`](#line-styling) | `number` | Yes | - | `undefined`
+| [`hoverBorderJoinStyle`](#line-styling) | `string` | Yes | - | `undefined`
+| [`hoverBorderWidth`](#line-styling) | `number` | Yes | - | `undefined`
 | [`label`](#general) | `string` | - | - | `''`
 | [`lineTension`](#line-styling) | `number` | - | - | `0.4`
+| [`order`](#general) | `number` | - | - | `0`
 | [`pointBackgroundColor`](#point-styling) | `Color` | Yes | Yes | `'rgba(0, 0, 0, 0.1)'`
 | [`pointBorderColor`](#point-styling) | `Color` | Yes | Yes | `'rgba(0, 0, 0, 0.1)'`
 | [`pointBorderWidth`](#point-styling) | `number` | Yes | Yes | `1`
@@ -66,8 +77,8 @@ The line chart allows a number of properties to be specified for each dataset. T
 | [`pointRotation`](#point-styling) | `number` | Yes | Yes | `0`
 | [`pointStyle`](#point-styling) | <code>string&#124;Image</code> | Yes | Yes | `'circle'`
 | [`showLine`](#line-styling) | `boolean` | - | - | `undefined`
-| [`spanGaps`](#line-styling) | `boolean` | - | - | `undefined`
-| [`steppedLine`](#stepped-line) | <code>boolean&#124;string</code> | - | - | `false`
+| [`spanGaps`](#line-styling) | <code>boolean&#124;number</code> | - | - | `undefined`
+| [`stepped`](#stepped) | <code>boolean&#124;string</code> | - | - | `false`
 | [`xAxisID`](#general) | `string` | - | - | first x axis
 | [`yAxisID`](#general) | `string` | - | - | first y axis
 
@@ -75,7 +86,9 @@ The line chart allows a number of properties to be specified for each dataset. T
 
 | Name | Description
 | ---- | ----
+| `clip` | How to clip relative to chartArea. Positive value allows overflow, negative value clips that many pixels inside chartArea. `0` = clip at chartArea. Clipping can also be configured per side: `clip: {left: 5, top: false, right: -2, bottom: 0}`
 | `label` | The label for the dataset which appears in the legend and tooltips.
+| `order` | The drawing order of dataset. Also affects order for stacking, tooltip and legend.
 | `xAxisID` | The ID of the x axis to plot this dataset on.
 | `yAxisID` | The ID of the y axis to plot this dataset on.
 
@@ -111,7 +124,7 @@ The style of the line can be controlled with the following properties:
 | `fill` | How to fill the area under the line. See [area charts](area.md).
 | `lineTension` | Bezier curve tension of the line. Set to 0 to draw straightlines. This option is ignored if monotone cubic interpolation is used.
 | `showLine` | If false, the line is not drawn for this dataset.
-| `spanGaps` | If true, lines will be drawn between points with no or null data. If false, points with `NaN` data will create a break in the line.
+| `spanGaps` | If true, lines will be drawn between points with no or null data. If false, points with `NaN` data will create a break in the line. Can also be a number specifying the maximum gap length to span. The unit of the value depends on the scale used.
 
 If the value is `undefined`, `showLine` and `spanGaps` fallback to the associated [chart configuration options](#configuration-options). The rest of the values fallback to the associated [`elements.line.*`](../configuration/elements.md#line-configuration) options.
 
@@ -127,7 +140,9 @@ The interaction with each point can be controlled with the following properties:
 | `pointHoverRadius` | The radius of the point when hovered.
 
 ### cubicInterpolationMode
+
 The following interpolation modes are supported.
+
 * `'default'`
 * `'monotone'`
 
@@ -137,19 +152,21 @@ The `'monotone'` algorithm is more suited to `y = f(x)` datasets : it preserves 
 
 If left untouched (`undefined`), the global `options.elements.line.cubicInterpolationMode` property is used.
 
-### Stepped Line
-The following values are supported for `steppedLine`.
+### Stepped
+
+The following values are supported for `stepped`.
+
 * `false`: No Step Interpolation (default)
 * `true`: Step-before Interpolation (eq. `'before'`)
 * `'before'`: Step-before Interpolation
 * `'after'`: Step-after Interpolation
 * `'middle'`: Step-middle Interpolation
 
-If the `steppedLine` value is set to anything other than false, `lineTension` will be ignored.
+If the `stepped` value is set to anything other than false, `lineTension` will be ignored.
 
 ## Configuration Options
 
-The line chart defines the following configuration options. These options are merged with the global chart configuration options, `Chart.defaults.global`, to form the options passed to the chart.
+The line chart defines the following configuration options. These options are merged with the global chart configuration options, `Chart.defaults`, to form the options passed to the chart.
 
 | Name | Type | Default | Description
 | ---- | ---- | ------- | -----------
@@ -161,34 +178,14 @@ The line chart defines the following configuration options. These options are me
 It is common to want to apply a configuration setting to all created line charts. The global line chart settings are stored in `Chart.defaults.line`. Changing the global options only affects charts created after the change. Existing charts are not changed.
 
 For example, to configure all line charts with `spanGaps = true` you would do:
+
 ```javascript
 Chart.defaults.line.spanGaps = true;
 ```
 
 ## Data Structure
 
-The `data` property of a dataset for a line chart can be passed in two formats.
-
-### number[]
-```javascript
-data: [20, 10]
-```
-
-When the `data` array is an array of numbers, the x axis is generally a [category](../axes/cartesian/category.md#category-cartesian-axis). The points are placed onto the axis using their position in the array. When a line chart is created with a category axis, the `labels` property of the data object must be specified.
-
-### Point[]
-
-```javascript
-data: [{
-    x: 10,
-    y: 20
-}, {
-    x: 15,
-    y: 10
-}]
-```
-
-This alternate is used for sparse datasets, such as those in [scatter charts](./scatter.md#scatter-chart). Each data point is specified using an object containing `x` and `y` properties.
+See [`Data structures`](../general/data-structures.md)
 
 ## Stacked Area Chart
 
@@ -200,82 +197,14 @@ var stackedLine = new Chart(ctx, {
     data: data,
     options: {
         scales: {
-            yAxes: [{
+            y: {
                 stacked: true
-            }]
-        }
-    }
-});
-```
-
-## High Performance Line Charts
-
-When charting a lot of data, the chart render time may start to get quite large. In that case, the following strategies can be used to improve performance.
-
-### Data Decimation
-
-Decimating your data will achieve the best results. When there is a lot of data to display on the graph, it doesn't make sense to show tens of thousands of data points on a graph that is only a few hundred pixels wide.
-
-There are many approaches to data decimation and selection of an algorithm will depend on your data and the results you want to achieve. For instance, [min/max](https://digital.ni.com/public.nsf/allkb/F694FFEEA0ACF282862576020075F784) decimation will preserve peaks in your data but could require up to 4 points for each pixel. This type of decimation would work well for a very noisy signal where you need to see data peaks.
-
-### Disable Bezier Curves
-
-If you are drawing lines on your chart, disabling bezier curves will improve render times since drawing a straight line is more performant than a bezier curve.
-
-To disable bezier curves for an entire chart:
-
-```javascript
-new Chart(ctx, {
-    type: 'line',
-    data: data,
-    options: {
-        elements: {
-            line: {
-                tension: 0 // disables bezier curves
             }
         }
     }
 });
 ```
 
-### Disable Line Drawing
+## Internal data format
 
-If you have a lot of data points, it can be more performant to disable rendering of the line for a dataset and only draw points. Doing this means that there is less to draw on the canvas which will improve render performance.
-
-To disable lines:
-
-```javascript
-new Chart(ctx, {
-    type: 'line',
-    data: {
-        datasets: [{
-            showLine: false // disable for a single dataset
-        }]
-    },
-    options: {
-        showLines: false // disable for all datasets
-    }
-});
-```
-
-### Disable Animations
-
-If your charts have long render times, it is a good idea to disable animations. Doing so will mean that the chart needs to only be rendered once during an update instead of multiple times. This will have the effect of reducing CPU usage and improving general page performance.
-
-To disable animations
-
-```javascript
-new Chart(ctx, {
-    type: 'line',
-    data: data,
-    options: {
-        animation: {
-            duration: 0 // general animation time
-        },
-        hover: {
-            animationDuration: 0 // duration of animations when hovering an item
-        },
-        responsiveAnimationDuration: 0 // animation duration after a resize
-    }
-});
-```
+`{x, y}`

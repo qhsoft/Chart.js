@@ -14,12 +14,29 @@ All of the included cartesian axes support a number of common options.
 | Name | Type | Default | Description
 | ---- | ---- | ------- | -----------
 | `type` | `string` | | Type of scale being employed. Custom scales can be created and registered with a string key. This allows changing the type of an axis for a chart.
-| `position` | `string` | | Position of the axis in the chart. Possible values are: `'top'`, `'left'`, `'bottom'`, `'right'`
-| `offset` | `boolean` | `false` | If true, extra space is added to the both edges and the axis is scaled to fit into the chart area. This is set to `true` for a category scale in a bar chart by default.
+| `position` | `string` | | Position of the axis. [more...](#axis-position)
+| `axis` | `string` | | Which type of axis this is. Possible values are: `'x'`, `'y'`. If not set, this is inferred from the first character of the ID which should be `'x'` or `'y'`.
+| `offset` | `boolean` | `false` | If true, extra space is added to the both edges and the axis is scaled to fit into the chart area. This is set to `true` for a bar chart by default.
 | `id` | `string` | | The ID is used to link datasets and scale axes together. [more...](#axis-id)
 | `gridLines` | `object` | | Grid line configuration. [more...](../styling.md#grid-line-configuration)
 | `scaleLabel` | `object` | | Scale title configuration. [more...](../labelling.md#scale-title-configuration)
 | `ticks` | `object` | | Tick configuration. [more...](#tick-configuration)
+
+### Axis Position
+
+An axis can either be positioned at the edge of the chart, at the center of the chart area, or dynamically with respect to a data value.
+
+To position the axis at the edge of the chart, set the `position` option to one of: `'top'`, `'left'`, `'bottom'`, `'right'`.
+To position the axis at the center of the chart area, set the `position` option to `'center'`. In this mode, either the `axis` option is specified or the axis ID starts with the letter 'x' or 'y'.
+To position the axis with respect to a data value, set the `position` option to an object such as: 
+
+```javascript
+{
+    x: -20
+}
+```
+
+This will position the axis at a value of -20 on the axis with ID "x". For cartesian axes, only 1 axis may be specified.
 
 ### Tick Configuration
 The following options are common to all cartesian axes but do not apply to other axes.
@@ -28,6 +45,7 @@ The following options are common to all cartesian axes but do not apply to other
 | ---- | ---- | ------- | -----------
 | `min` | `number` | | User defined minimum value for the scale, overrides minimum value from data.
 | `max` | `number` | | User defined maximum value for the scale, overrides maximum value from data.
+| `sampleSize` | `number` | `ticks.length` | The number of ticks to examine when deciding how many labels will fit. Setting a smaller value will be faster, but may be less accurate when there is large variability in label length.
 | `autoSkip` | `boolean` | `true` | If true, automatically calculates how many labels can be shown and hides labels accordingly. Labels will be rotated up to `maxRotation` before skipping any. Turn `autoSkip` off to show all labels no matter what.
 | `autoSkipPadding` | `number` | `0` | Padding between the ticks on the horizontal axis when `autoSkip` is enabled.
 | `labelOffset` | `number` | `0` | Distance in pixels to offset the label from the centre point of the tick (in the x direction for the x axis, and the y direction for the y axis). *Note: this can cause labels at the edges to be cropped by the edge of the canvas*
@@ -37,7 +55,8 @@ The following options are common to all cartesian axes but do not apply to other
 | `padding` | `number` | `0` | Padding between the tick label and the axis. When set on a vertical axis, this applies in the horizontal (X) direction. When set on a horizontal axis, this applies in the vertical (Y) direction.
 
 ### Axis ID
-The properties `dataset.xAxisID` or `dataset.yAxisID` have to match the scale properties `scales.xAxes.id` or `scales.yAxes.id`. This is especially needed if multi-axes charts are used.
+
+The properties `dataset.xAxisID` or `dataset.yAxisID` have to match to `scales` property. This is especially needed if multi-axes charts are used.
 
 ```javascript
 var myChart = new Chart(ctx, {
@@ -53,11 +72,10 @@ var myChart = new Chart(ctx, {
     },
     options: {
         scales: {
-            yAxes: [{
-                id: 'first-y-axis',
+            'first-y-axis': {
                 type: 'linear'
-            }, {
-                id: 'second-y-axis',
+            },
+            'second-y-axis': {
                 type: 'linear'
             }]
         }
@@ -92,12 +110,11 @@ var myChart = new Chart(ctx, {
     },
     options: {
         scales: {
-            yAxes: [{
-                id: 'left-y-axis',
+            'left-y-axis': {
                 type: 'linear',
                 position: 'left'
-            }, {
-                id: 'right-y-axis',
+            },
+            'right-y-axis': {
                 type: 'linear',
                 position: 'right'
             }]

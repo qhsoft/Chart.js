@@ -22,16 +22,17 @@ var scatterChart = new Chart(ctx, {
     },
     options: {
         scales: {
-            xAxes: [{
+            x: {
                 type: 'linear',
                 position: 'bottom'
-            }]
+            }
         }
     }
 });
 ```
 
 ## Dataset Properties
+
 The scatter chart supports all of the same properties as the [line chart](./line.md#dataset-properties).
 
 ## Data Structure
@@ -47,3 +48,7 @@ data: [{
         y: 10
     }]
 ```
+
+## Internal data format
+
+`{x, y}`

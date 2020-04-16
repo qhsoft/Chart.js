@@ -1,5 +1,5 @@
 # Usage
-Chart.js can be used with ES6 modules, plain JavaScript and module loaders.
+Chart.js can be used with ES6 modules, plain JavaScript, and module loaders.
 
 ## Creating a Chart
 
@@ -53,11 +53,9 @@ var myChart = new Chart(ctx, {
     },
     options: {
         scales: {
-            yAxes: [{
-                ticks: {
-                    beginAtZero: true
-                }
-            }]
+            y: {
+                beginAtZero: true
+            }
         }
     }
 });

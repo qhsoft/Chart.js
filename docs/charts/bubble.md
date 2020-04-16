@@ -43,20 +43,26 @@ The bubble chart allows a number of properties to be specified for each dataset.
 | [`backgroundColor`](#styling) | [`Color`](../general/colors.md) | Yes | Yes | `'rgba(0, 0, 0, 0.1)'`
 | [`borderColor`](#styling) | [`Color`](../general/colors.md) | Yes | Yes | `'rgba(0, 0, 0, 0.1)'`
 | [`borderWidth`](#styling) | `number` | Yes | Yes | `3`
+| [`clip`](#general) | <code>number&#124;object</code> | - | - | `undefined`
 | [`data`](#data-structure) | `object[]` | - | - | **required**
 | [`hoverBackgroundColor`](#interactions) | [`Color`](../general/colors.md) | Yes | Yes | `undefined`
 | [`hoverBorderColor`](#interactions) | [`Color`](../general/colors.md) | Yes | Yes | `undefined`
 | [`hoverBorderWidth`](#interactions) | `number` | Yes | Yes | `1`
 | [`hoverRadius`](#interactions) | `number` | Yes | Yes | `4`
 | [`hitRadius`](#interactions) | `number` | Yes | Yes | `1`
-| [`label`](#labeling) | `string` | - | - | `undefined`
+| [`label`](#general) | `string` | - | - | `undefined`
+| [`order`](#general) | `number` | - | - | `0`
 | [`pointStyle`](#styling) | `string` | Yes | Yes | `'circle'`
 | [`rotation`](#styling) | `number` | Yes | Yes | `0`
 | [`radius`](#styling) | `number` | Yes | Yes | `3`
 
-### Labeling
+### General
 
-`label` defines the text associated to the dataset and which appears in the legend and tooltips.
+| Name | Description
+| ---- | ----
+| `clip` | How to clip relative to chartArea. Positive value allows overflow, negative value clips that many pixels inside chartArea. `0` = clip at chartArea. Clipping can also be configured per side: `clip: {left: 5, top: false, right: -2, bottom: 0}`
+| `label` | The label for the dataset which appears in the legend and tooltips.
+| `order` | The drawing order of dataset. Also affects order for tooltip and legend.
 
 ### Styling
 
@@ -109,3 +115,7 @@ Bubble chart datasets need to contain a `data` array of points, each points repr
 ```
 
 **Important:** the radius property, `r` is **not** scaled by the chart, it is the raw radius in pixels of the bubble that is drawn on the canvas.
+
+## Internal data format
+
+`{x, y, _custom}` where `_custom` is the radius.

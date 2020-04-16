@@ -2,7 +2,7 @@
 
 ## Tooltip Configuration
 
-The tooltip configuration is passed into the `options.tooltips` namespace. The global options for the chart tooltips is defined in `Chart.defaults.global.tooltips`.
+The tooltip configuration is passed into the `options.tooltips` namespace. The global options for the chart tooltips is defined in `Chart.defaults.tooltips`.
 
 | Name | Type | Default | Description
 | ---- | ---- | ------- | -----------
@@ -42,10 +42,12 @@ The tooltip configuration is passed into the `options.tooltips` namespace. The g
 | `cornerRadius` | `number` | `6` | Radius of tooltip corner curves.
 | `multiKeyBackground` | `Color` | `'#fff'` | Color to draw behind the colored boxes when multiple items are in the tooltip.
 | `displayColors` | `boolean` | `true` | If true, color boxes are shown in the tooltip.
+| `boxWidth` | `number` | `bodyFontSize` | Width of the color box if displayColors is true.
+| `boxHeight` | `number` | `bodyFontSize` | Height of the color box if displayColors is true.
 | `borderColor` | `Color` | `'rgba(0, 0, 0, 0)'` | Color of the border.
 | `borderWidth` | `number` | `0` | Size of the border.
 | `rtl` | `boolean` | | `true` for rendering the legends from right to left.
-| `textDirection` | `string` | canvas' default | This will force the text direction `'rtl'|'ltr` on the canvas for rendering the tooltips, regardless of the css specified on the canvas
+| `textDirection` | `string` | canvas' default | This will force the text direction `'rtl' or 'ltr` on the canvas for rendering the tooltips, regardless of the css specified on the canvas
 
 ### Position Modes
 
@@ -61,13 +63,14 @@ Example:
 ```javascript
 /**
  * Custom positioner
- * @function Chart.Tooltip.positioners.custom
+ * @function Tooltip.positioners.custom
  * @param elements {Chart.Element[]} the tooltip elements
  * @param eventPosition {Point} the position of the event in canvas coordinates
  * @returns {Point} the tooltip position
  */
-Chart.Tooltip.positioners.custom = function(elements, eventPosition) {
-    /** @type {Chart.Tooltip} */
+const tooltipPlugin = Chart.plugins.getAll().find(p => p.id === 'tooltip');
+tooltipPlugin.positioners.custom = function(elements, eventPosition) {
+    /** @type {Tooltip} */
     var tooltip = this;
 
     /* ... */
@@ -99,7 +102,7 @@ Allows filtering of [tooltip items](#tooltip-item-interface). Must implement at 
 
 ## Tooltip Callbacks
 
-The tooltip label configuration is nested below the tooltip configuration using the `callbacks` key. The tooltip has the following callbacks for providing text. For all functions, `this` will be the tooltip object created from the `Chart.Tooltip` constructor.
+The tooltip label configuration is nested below the tooltip configuration using the `callbacks` key. The tooltip has the following callbacks for providing text. For all functions, `this` will be the tooltip object created from the `Tooltip` constructor.
 
 All functions are called with the same arguments: a [tooltip item](#tooltip-item-interface) and the `data` object passed to the chart. All functions must return either a string or an array of strings. Arrays of strings are treated as multiple lines of text.
 
@@ -121,7 +124,7 @@ All functions are called with the same arguments: a [tooltip item](#tooltip-item
 
 ### Label Callback
 
-The `label` callback can change the text that displays for a given data point. A common example to round data values; the following example rounds the data to two decimal places.
+The `label` callback can change the text that displays for a given data point. A common example to show a unit. The example below puts a `'$'` before every row.
 
 ```javascript
 var chart = new Chart(ctx, {
@@ -136,7 +139,9 @@ var chart = new Chart(ctx, {
                     if (label) {
                         label += ': ';
                     }
-                    label += Math.round(tooltipItem.yLabel * 100) / 100;
+                    if (!helpers.isNullOrUndef(tooltipItem.value)) {
+                        label += '$' + tooltipItem.value;
+                    }
                     return label;
                 }
             }
@@ -183,25 +188,11 @@ The tooltip items passed to the tooltip callbacks implement the following interf
     // Value for the tooltip
     value: string,
 
-    // X Value of the tooltip
-    // (deprecated) use `value` or `label` instead
-    xLabel: number | string,
-
-    // Y value of the tooltip
-    // (deprecated) use `value` or `label` instead
-    yLabel: number | string,
-
     // Index of the dataset the item comes from
     datasetIndex: number,
 
     // Index of this data item in the dataset
-    index: number,
-
-    // X position of matching point
-    x: number,
-
-    // Y position of matching point
-    y: number
+    index: number
 }
 ```
 
@@ -370,7 +361,7 @@ The tooltip model contains parameters that can be used to render the tooltip.
 
     // 0 opacity is a hidden tooltip
     opacity: number,
-    legendColorBackground: Color,
+    multiKeyBackground: Color,
     displayColors: boolean,
     borderColor: Color,
     borderWidth: number
